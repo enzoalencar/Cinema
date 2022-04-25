@@ -3,6 +3,7 @@
 #include <windows.h>//Biblioteca Funções do Terminal Windows
 #include <conio.h>//Biblioteca para Manipular Caracteres na Tela
 #include <ctype.h>//Biblioteca para Classificar Caracteres
+#include <string.h>
 
 //Cores
 #define RST  "\x1B[0m"//Cor Resetar
@@ -313,49 +314,78 @@ if(largura==1)
 if(largura==21)
 	login();
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void login()//Funçao login
 {
-	void assentos();
-	int num1;
-	int tamN = 100, tami = 15;
-    int i, vali;
-    char nome[tamN], idade[tami], resp;
+    void assentos();
+    int tamN = 100, tami = 15;
+    int i, vali, cont = 0;
+    char nome[tamN], idade[tami];
 
-do
-{
-	system("color 00");//Setar Padrão Cor do Terminal
-	Retangulo(0,0,90,30);//Retangulo Principal
-	Retangulo(28,8,34,10);//Retangulo Mini Menu
-    Gotoxy(40,10);
-    printf(YEL"LOGIN"RST);
-    Gotoxy(30,12);
-    printf(RED"Nome Completo:"RST);
-    Gotoxy(30,13);
-    fgets(nome, tamN, stdin);
-    nome[strcspn(nome, "\n")] = 0;
-    vali = 1;
-
-    for(i = 0; nome[i] != '\0'; i++)
+    do
     {
-        if(!isalpha(nome[i]) && nome[i] != 32)
+        do
         {
-            vali = 0;
-            break;
-        }
-    }
-    if(vali == 0)
-    system("cls");
-}while(vali == 0);
+            system("color 00");//Setar Padrão Cor do Terminal
+            Retangulo(0,0,90,30);//Retangulo Principal
+            Retangulo(28,8,34,10);//Retangulo Mini Menu
+            Gotoxy(40,10);
+            printf(YEL"LOGIN"RST);
+            Gotoxy(30,12);
+            printf(RED"Nome Completo:"RST);
+            Gotoxy(30,13);
 
- 	Gotoxy(30,14);
- 	printf(RED"Idade"RST);
- 	Gotoxy(30,15);
- 	scanf(" %d",&num1);
- 	system("cls");
-	assentos();
+            if(cont == 0)
+            {
+            fgets(nome, tamN, stdin);
+            }
+
+            if(cont == 1)
+            {
+            printf("%s", nome);
+            }
+
+            nome[strcspn(nome, "\n")] = 0;
+            vali = 1;
+
+            for(i = 0; nome[i] != '\0'; i++)
+            {
+                if(!isalpha(nome[i]) && nome[i] != 32)
+                {
+                    vali = 0;
+                    break;
+                }
+            }
+
+            if(vali == 0)
+            {
+                    system("cls");
+            }
+
+        }while(vali == 0);
+
+        Gotoxy(30,14);
+        printf(RED"Idade:"RST);
+
+        Gotoxy(30,15);
+        fgets(idade, tami, stdin);
+        vali = 1;
+
+        for(i = 0; idade[i] != '\0'; i++)
+        {
+            if(isalpha(idade[i]))
+            {
+                vali = 0;
+                system("cls");
+                cont=1;
+                break;
+            }
+        }
+    }while(vali == 0);
+    system("cls");
+    assentos();
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void assentos()
 {
 	void encerrando();
