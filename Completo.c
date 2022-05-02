@@ -408,7 +408,6 @@ void filmesmenu(int filme)
 
 void login(int filme, int horario)
 {
-    void assentos();
     int i = 0, comprimento = 0;
     char nome[30], idade[4];
     char letra, num;
