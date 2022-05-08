@@ -3,32 +3,46 @@
 #include <windows.h> //Biblioteca com fun��es do terminal do Windows
 #include <conio.h> //Biblioteca de manipula��o de caracteres na Tela
 #include <ctype.h> //Biblioteca para classificar caracteres
-#include <string.h>
+//#include <string.h>
+
 
 //Cores
 #define RST  "\x1B[0m" //Reset da cor
 #define RED  "\e[31;1m" //Cor vermelha
-#define GRN "\e[32;1m" //Cor verde
+#define GRN "\e[32;10m" //Cor verde
+#define GRNN  "\e[32;1m" //Cor verde negrito
 #define YEL "\e[33;1m" //Cor amarela
-#define BLU  "\x1B[34m" //Cor azul
+#define BLU  "\e[34;10m" //Cor azul
 #define MAG  "\x1B[35m" //Cor magenta
 #define CYN  "\x1B[36m" //Cor ciano
 #define WHT  "\e[38;1m" //Cor branca
-#define REDB  "\e[31;7m" //Vermelho no background
+#define REDB  "\e[31;7m" //Vermelho
 #define REDN  "\e[31;1m" //Em negrito
+#define GRY  "\e[30;1m" // Cinza
+#define BRO  "\e[33;2m" // Marrom
 
 //Fun��es auxiliares
 void Gotoxy(int coord_x, int coord_y); //Fun��o que possibilita a personaliza��o localizada no terminal, atrav�s de coordenadas
 void Retangulo( int ho, int vo, int larg, int alt ); //Gera um ret�ngulo na tela
 
+void desenhoUm();
+void desenhoDois();
+void desenhoTres();
+
+void desenhoCatalogoUm();
+void desenhoCatalogoDois();
+void desenhoCatalogoTres();
+
 void load(); //Fun��o da tela de loading de inicializa��o
 void encerrando();//Fun�ao da tela de loading de encerramento
+void bilhete(char nome[30], int idade);
 
 void inicio(); //Fun��o do menu inicial
 void catalogo(); //Fun��o do cat�logo de filmes
 void filmesmenu(int filme); //Fun��o do filme especificado
 void login(int filme, int horario); //Fun��o de identifica��o
-void assentos(int filme, int horario); //Fun��o das cadeiras do hor�rio especificado
+void assentos(int filme, int horario, char nome[30], int idade); //Fun��o das cadeiras do hor�rio especificado
+int ValiCinema(int coluna,char linha);//Valida as cadeiras antes de armazenar
 
 int ler(int *rL,int *rC,int *rB, const char* file_name); //Ler os assentos j� ocupados no arquivo
 int gravar(int linha, int coluna, const char* file_name); //Fun��o que grava os novos assentos ocupados
@@ -39,6 +53,7 @@ int vazio(const char* file_name); //Fun�ao que Verifica se o arquivo esta vazi
 //Fun��o Principal
 int main()
 {
+	system("MODE con cols=92 lines=31");
 	load();
 	inicio();
 	return 0;
@@ -134,6 +149,8 @@ void inicio()
 
     Gotoxy(42, 10);
     printf(YEL"CINEMA"RST);
+     Gotoxy(42, 16);
+    printf(YEL"CINEMA"RST);
 
 	do
 	{
@@ -144,18 +161,11 @@ void inicio()
     	else if (altura != 3)
  			printf(RST"Catalogo\n\n\n"RST);
 
- 		Gotoxy(39, 14);
+ 		Gotoxy(43, 14);
  		if (altura == 5)
-    		printf(RED"Funcionarios\n\n\n"RST);
-
-    	else if (altura != 5)
- 			printf(RST"Funcionarios\n\n\n"RST);
-
- 		Gotoxy(43, 16);
- 		if (altura == 7)
  			printf(RED"Sair"RST);
 
- 		else if (altura != 7)
+ 		else if (altura != 5)
  			printf(RST"Sair\n\n\n"RST);
 
 		fflush(stdin); //Limpa o buffer
@@ -168,11 +178,11 @@ void inicio()
 					altura -= 2 ;
 
 				else
-					altura = 7; //Se o limite for excedido ele volta ao �ltimo valor de altura
+					altura = 5; //Se o limite for excedido ele volta ao �ltimo valor de altura
 				break;
 
 			case 80:
-				if(altura < 7) //Move ao pressionar seta para baixo
+				if(altura < 5) //Move ao pressionar seta para baixo
 					altura += 2;
 
 				else
@@ -186,11 +196,7 @@ void inicio()
 
 	switch(altura)
 	{
-		case 7: //Caso selecione "Sair"
-			encerrando();
-			break;
-
-		case 5: //Caso selecione "Funcionarios"
+		case 5: //Caso selecione "Sair"
 			encerrando();
 			break;
 
@@ -211,6 +217,11 @@ void catalogo()
 	Retangulo(0, 0, 90, 30);//Ret�ngulo externo
 
 	int i, espacamento = 0;
+
+	desenhoUm();
+	desenhoDois();
+	desenhoTres();
+
 	for (i = 1; i < 4; i++) //Constr�i 3 ret�ngulos internos
 	{
 		espacamento += 20;
@@ -311,17 +322,31 @@ void filmesmenu(int filme)
 
 
     Retangulo(0, 0, 90, 30); //Retangulo externo
-    Retangulo(5, 3, 15, 8); //Retangulo interno da foto
+    Retangulo(5, 3, 14, 8); //Retangulo interno da foto
     Retangulo(29, 3, 50, 12); //Retangulo interno da descri��o
     Retangulo(18, 23, 50, 4); //Retangulo externo dos hor�rios
+
 
     if (filme == 3)
     {
         Gotoxy(3,13);
-        printf(RED"Maioridade Necessaria"RST);
+        desenhoCatalogoTres();
     }
 
-    Gotoxy(10,12);
+    if (filme == 2)
+    {
+        Gotoxy(3,13);
+        desenhoCatalogoDois();
+    }
+
+    if (filme == 1)
+    {
+        Gotoxy(3,13);
+        printf(RED"Maioridade Necessaria"RST);
+        desenhoCatalogoUm();
+    }
+
+    Gotoxy(9,12);
     printf(YEL"Filme %i"RST, filme);
 
     Gotoxy(40,21);
@@ -408,7 +433,7 @@ void filmesmenu(int filme)
 
 void login(int filme, int horario)
 {
-    int i = 0, comprimento = 0;
+    int i = 0, comprimento = 0,vali=0;
     char nome[30], idade[4];
     char letra, num;
 
@@ -453,8 +478,12 @@ void login(int filme, int horario)
         }
 	}while(letra != 13 || comprimento < 1 || nome[i - 1] == 32);
 
+	fflush(stdin);
 	i = 0;
 	comprimento = 0;
+
+    Gotoxy(31, 14);
+    printf("                               ");
 
 	Gotoxy(31,15);
     printf(YEL"Idade:"RST);
@@ -476,25 +505,32 @@ void login(int filme, int horario)
           i--;
           printf("\b \b");
         }
-
         comprimento = strlen(idade);
 
-        if(comprimento > 3)
+		vali = atoi(idade);
+
+        if(vali > 120)
         {
             Gotoxy(31, 17);
-            printf(RED"Use apenas numeros"RST);
+            printf(RED"Idade invalida"RST);
             idade[i]='\0';
             i--;
             Gotoxy(35, 16);
             printf("\b \b");
         }
-	}while(num != 13 || comprimento < 1);
 
+    }while(num != 13  || comprimento < 1);
+
+	if(filme == 1 && vali < 18)
+	{
+		system("cls");
+		filmesmenu(1);
+	}
     system("cls");
-	Beep(349,100);//Gera um Som a 349 hz por 100 ms
-	assentos(filme, horario);
+    Beep(349,100);//Gera um Som a 349 hz por 100 ms
+    assentos(filme, horario, nome, vali);
 }
-void assentos(int filme, int horario)
+void assentos(int filme, int horario, char nome[30], int idade)
 {
 	Retangulo(0, 0, 90, 30); //Ret�ngulo externo
 	Retangulo(2, 1, 86, 15); //Ret�ngulo dos assentos
@@ -546,7 +582,7 @@ void assentos(int filme, int horario)
 				printf(RED"%c%d "RST, linha + 65, coluna);
 
 			else if (Cinema[linha][coluna] == 0) //Se estiver livre imprime verde
-				printf(GRN"%c%d "RST, linha + 65, coluna);
+				printf(GRNN"%c%d "RST, linha + 65, coluna);
 		}
 		printf("\n");
 	}
@@ -617,26 +653,40 @@ void assentos(int filme, int horario)
 	Gotoxy(36, 21);
 	printf(RST"Escolher Assentos"RST);
 
-    int num_ingressos = 0;
+    int num_ingressos = 0,comprimento;
+    char vali_ingressos[4];
+    char num;
+    i=0;
+
+	Gotoxy(4, 24);
+	printf(YEL"Quantos Ingressos Voce deseja ?"RST);
 	do
-	{
-		Gotoxy(4, 24);
-		printf(YEL"Quantos Ingressos Voce deseja ?"RST);
+    {
+    	Gotoxy(4, 25);
+        vali_ingressos[i] = '\0';
+        num = getch();
+        if(isdigit(num))
+        {
+            vali_ingressos[i] = num;
+            i++;
+            printf("%c", num);
+        }
+        if(num == 8 && i)// 8 = backspace e i -> se houver caracteres ja digitados
+        {
+          vali_ingressos[i] = '\0';
+          i--;
+          printf("\b \b");
+        }
 
-		Gotoxy(4, 25);
-		fflush(stdin);
-		scanf("%d", &num_ingressos);
+        comprimento = strlen(vali_ingressos);
+        num_ingressos = atoi(vali_ingressos);
 
-		if (num_ingressos == 0)
-		{
-            Gotoxy(4, 26);
-			printf(RED"Digite Novamente"RST);
+        if(num_ingressos < 322)
+        {
+	        Gotoxy(4, 26);
+	        printf(RED"Numero Maximo Atingido"RED);
 		}
-
-		Gotoxy(4,25);
-		printf("                     ");
-	}while (num_ingressos == 0);
-
+    }while(num != 13  || comprimento < 1 || num_ingressos > 322);
 	Gotoxy(4, 25);
 	printf("%d", num_ingressos);
 
@@ -672,7 +722,7 @@ void assentos(int filme, int horario)
 				printf(RED"%c%d "RST, linha + 65, coluna);
 
 			else if (Cinema[linha][coluna] == 0) //Livre imprime verde
-				printf(GRN"%c%d "GRN, linha + 65, coluna);
+				printf(GRNN"%c%d "GRN, linha + 65, coluna);
 		}
 		printf("\n");
 	}
@@ -730,7 +780,7 @@ void assentos(int filme, int horario)
     if (largura == 1)
 	{
 		system("cls");
-		inicio();
+		bilhete(nome, idade);
 	}
 
 	if (largura == 21)
@@ -828,4 +878,98 @@ void encerrando()
 	Beep(349,100);
 	system("cls");
 	exit(1); //Encerra o progama
+}
+void desenhoUm()
+{
+Gotoxy(22,11);printf(RED"\xDB\xDC\xDB\xDC\xDB"BLU);
+Gotoxy(22,12);printf(RED"\xDF   \xDF"BLU);
+Gotoxy(23,12);printf(RED"\xDB\xDB\xDB"GRN);
+Gotoxy(24,13);printf(GRN"\xDB"GRN);
+Gotoxy(24,14);printf(GRN"\xDB"RED);
+}
+void desenhoDois()
+{
+Gotoxy(42,11);printf(GRY"\xDB\xDC\xDB\xDC\xDB"GRY);
+Gotoxy(42,12);printf(GRY"      "GRY);
+Gotoxy(42,12);printf(GRY" \xDB\xDB\xDB "GRY);
+Gotoxy(42,13);printf(GRY" \xDB\xDB\xDB "GRY);
+Gotoxy(42,14);printf(GRY"\xDB\xDB\xDB\xDB\xDB"GRY);
+}
+
+void desenhoTres()
+{
+Gotoxy(62,11);printf(GRN" \xDB\xDB\xDB "GRY);
+Gotoxy(62,12);printf(GRN"\xDB\xDB\xDB\xDB\xDB"BRO);
+Gotoxy(62,12);printf(BLU"\xDF\xDF\xDB\xDF\xDF"GRY);
+Gotoxy(62,13);printf(BLU"  \xDB"YEL);
+Gotoxy(62,14);printf(BLU"  \xDB"RST);
+}
+void desenhoCatalogoUm()
+{
+Gotoxy(10,5);printf(RED"\xDB\xDC\xDB\xDC\xDB"BLU);
+Gotoxy(10,6);printf(RED"\xDF   \xDF"BLU);
+Gotoxy(10,6);printf(RED"\xDB\xDB\xDB\xDB\xDB"GRY);
+Gotoxy(11,7);printf(RED"\xDB\xDB\xDB"GRN);
+Gotoxy(12,8);printf(GRN"\xDB"GRN);
+Gotoxy(12,9);printf(GRN"\xDB"RED);
+}
+void desenhoCatalogoDois()
+{
+Gotoxy(10,5);printf(GRY"\xDB\xDC\xDB\xDC\xDB"GRY);
+Gotoxy(10,6);printf(GRY"      "GRY);
+Gotoxy(10,6);printf(GRY" \xDB\xDB\xDB "GRY);
+Gotoxy(10,7);printf(GRY" \xDB\xDB\xDB "GRY);
+Gotoxy(10,8);printf(GRY"\xDB\xDB\xDB\xDB\xDB"GRY);
+Gotoxy(10,9);printf(GRY"\xDF\xDF\xDF\xDF\xDF"GRY);
+}
+void desenhoCatalogoTres()
+{
+Gotoxy(10,5);printf(GRN" \xDB\xDB\xDB "GRY);
+Gotoxy(10,6);printf(GRN"\xDB\xDB\xDB\xDB\xDB"BRO);
+Gotoxy(10,6);printf(BLU"\xDF\xDF\xDB\xDF\xDF"GRY);
+Gotoxy(10,7);printf(BLU"  \xDB"YEL);
+Gotoxy(10,8);printf(BLU"  \xDB"YEL);
+Gotoxy(10,9);printf(BLU"  \xDB"RST);
+}
+void bilhete(char nome[30], int idade)
+{
+	system("color 00");
+	Retangulo(19,8,51,12);//PRINCI
+
+	Gotoxy(21,9);
+	printf("%c",4);
+	Gotoxy(68,9);
+	printf("%c",4);
+	Gotoxy(21,19);
+	printf("%c",4);
+	Gotoxy(68,19);
+	printf("%c",4);
+
+	for(int i = 9; i < 20; i++)
+    {
+        Gotoxy(66, i);
+        printf("|");
+    }
+
+	Gotoxy(41, 9);
+	printf(GRN"BATMAN");
+
+	Gotoxy(41, 10);
+	printf("18:00"YEL);
+
+	Gotoxy(21, 12);
+	printf("%s", nome);
+
+	Gotoxy(21, 13);
+	printf("%d anos", idade);
+
+	Gotoxy(21, 15);
+	printf("Assento(s) comprado(s):");
+
+	Gotoxy(21, 16);
+	printf("h1 h2 h3 h4 h5");
+
+	Gotoxy(40, 19);
+	printf("BOM FILME!");
+	getch();
 }
