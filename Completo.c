@@ -1,10 +1,10 @@
-//Bibliotecas
+	//Bibliotecas
 #include <stdio.h> //Blioteca padr�o de entrada e saida
 #include <windows.h> //Biblioteca com fun��es do terminal do Windows
 #include <conio.h> //Biblioteca de manipula��o de caracteres na Tela
 #include <ctype.h> //Biblioteca para classificar caracteres
-//#include <string.h>
-
+#include <iostream>
+#include <fstream>
 
 //Cores
 #define RST  "\x1B[0m" //Reset da cor
@@ -21,6 +21,7 @@
 #define GRY  "\e[30;1m" // Cinza
 #define BRO  "\e[33;2m" // Marrom
 
+using namespace std;
 //Fun��es auxiliares
 void Gotoxy(int coord_x, int coord_y); //Fun��o que possibilita a personaliza��o localizada no terminal, atrav�s de coordenadas
 void Retangulo( int ho, int vo, int larg, int alt ); //Gera um ret�ngulo na tela
@@ -35,15 +36,17 @@ void desenhoCatalogoTres();
 
 void load(); //Fun��o da tela de loading de inicializa��o
 void encerrando();//Fun�ao da tela de loading de encerramento
-void bilhete(char nome[30], int idade);
+void bilhete(char nome[30], int idade, char assentos[14][23],int horario, int filme);
 
 void inicio(); //Fun��o do menu inicial
 void catalogo(); //Fun��o do cat�logo de filmes
 void filmesmenu(int filme); //Fun��o do filme especificado
 void login(int filme, int horario); //Fun��o de identifica��o
 void assentos(int filme, int horario, char nome[30], int idade); //Fun��o das cadeiras do hor�rio especificado
-int ValiCinema(int coluna,char linha);//Valida as cadeiras antes de armazenar
+int valinum(int compri);
+int valiletra(int compri);
 
+int criar(const char* file_name);
 int ler(int *rL,int *rC,int *rB, const char* file_name); //Ler os assentos j� ocupados no arquivo
 int gravar(int linha, int coluna, const char* file_name); //Fun��o que grava os novos assentos ocupados
 
@@ -150,7 +153,7 @@ void inicio()
     Gotoxy(42, 10);
     printf(YEL"CINEMA"RST);
      Gotoxy(42, 16);
-    printf(YEL"CINEMA"RST);
+    printf(YEL"FACENS"RST);
 
 	do
 	{
@@ -239,24 +242,24 @@ void catalogo()
 
 		Gotoxy(21, 16);
 		if (largura == 21)
-			printf(RED"Filme 1 "RST); //Imprime Filme 1 vermelho
+			printf(RED"La Rosa "RST); //Imprime Filme 1 vermelho
 
 		else if (largura != 21)
-			printf(RST"Filme 1 "RST); //Imprime Filme 1 branco
+			printf(RST"La Rosa "RST); //Imprime Filme 1 branco
 
-		Gotoxy(41, 16);
+		Gotoxy(42, 16);
 		if (largura == 41)
-			printf(RED"Filme 2 "RST); //Imprime Filme 2 vermelho
+			printf(RED"Roque "RST); //Imprime Filme 2 vermelho
 
 		else if (largura != 41)
-			printf(RST"Filme 2 "RST); //Imprime Filme 2 branco
+			printf(RST"Roque "RST); //Imprime Filme 2 branco
 
-		Gotoxy(61, 16);
+		Gotoxy(59, 16);
 		if (largura == 61)
-			printf(RED"Filme 3 "RST); //Imprime Filme 3 vermelho
+			printf(RED"Brinquinhos "RST); //Imprime Filme 3 vermelho
 
 		else if (largura != 61)
-			printf(RST"Filme 3 "RST); //Imprime Filme 3 branco
+			printf(RST"Brinquinhos "RST); //Imprime Filme 3 branco
 
 		Gotoxy(80, 25);
 		if (largura == 81)
@@ -342,14 +345,27 @@ void filmesmenu(int filme)
     if (filme == 1)
     {
         Gotoxy(3,13);
-        printf(RED"Maioridade Necessaria"RST);
+        printf(RED"MAIORIDADE NECESSARIA"RST);
         desenhoCatalogoUm();
     }
 
-    Gotoxy(9,12);
-    printf(YEL"Filme %i"RST, filme);
+    if(filme == 1)
+    {
+    	Gotoxy(9,12);
+    	printf(YEL"La Rosa"RST, filme);
+	}
+	if(filme == 2)
+    {
+    	Gotoxy(10,12);
+    	printf(YEL"Roque"RST, filme);
+	}
+	if(filme == 3)
+    {
+    	Gotoxy(7,12);
+    	printf(YEL"Brinquinhos"RST, filme);
+	}
 
-    Gotoxy(40,21);
+    Gotoxy(40,22);
     printf(YEL"HORARIOS"RST);
 
     do
@@ -433,7 +449,7 @@ void filmesmenu(int filme)
 
 void login(int filme, int horario)
 {
-    int i = 0, comprimento = 0,vali=0;
+    int i = 0;
     char nome[30], idade[4];
     char letra, num;
 
@@ -452,6 +468,7 @@ void login(int filme, int horario)
     {
         nome[i] = '\0';
         letra = getch();
+        letra = toupper(letra);
         if(isalpha(letra) || letra == 32)
         {
             nome[i] = letra;
@@ -465,9 +482,7 @@ void login(int filme, int horario)
           printf("\b \b");
         }
 
-        comprimento = strlen(nome);
-
-        if(comprimento > 29)
+        if(strlen(nome) > 29)
         {
             Gotoxy(31, 14);
             printf(RED"Maximo de caracteres atingido"RST);
@@ -476,11 +491,10 @@ void login(int filme, int horario)
             Gotoxy(61, 13);
             printf("\b \b");
         }
-	}while(letra != 13 || comprimento < 1 || nome[i - 1] == 32);
+	}while(letra != 13 || strlen(nome) < 1 || nome[i - 1] == 32);
 
 	fflush(stdin);
 	i = 0;
-	comprimento = 0;
 
     Gotoxy(31, 14);
     printf("                               ");
@@ -499,36 +513,26 @@ void login(int filme, int horario)
             i++;
             printf("%c", num);
         }
-        if(num == 8 && i)// 8 = backspace e i -> se houver caracteres ja digitados
+        if(num == 8 && i || atoi(idade) > 120)// 8 = backspace e i -> se houver caracteres ja digitados
         {
           idade[i] = '\0';
           i--;
           printf("\b \b");
         }
-        comprimento = strlen(idade);
 
-		vali = atoi(idade);
+    }while(num != 13  || strlen(idade) < 1);
 
-        if(vali > 120)
-        {
-            Gotoxy(31, 17);
-            printf(RED"Idade invalida"RST);
-            idade[i]='\0';
-            i--;
-            Gotoxy(35, 16);
-            printf("\b \b");
-        }
-
-    }while(num != 13  || comprimento < 1);
-
-	if(filme == 1 && vali < 18)
+	if(filme == 1 && atoi(idade) < 18)
 	{
+		Gotoxy(31,16);
+		printf(RED"MAIORIDADE NECESSARIA"RST);
+		Sleep(250);
 		system("cls");
 		filmesmenu(1);
 	}
     system("cls");
     Beep(349,100);//Gera um Som a 349 hz por 100 ms
-    assentos(filme, horario, nome, vali);
+    assentos(filme, horario, nome, atoi(idade));
 }
 void assentos(int filme, int horario, char nome[30], int idade)
 {
@@ -537,13 +541,19 @@ void assentos(int filme, int horario, char nome[30], int idade)
 	Retangulo(38, 17, 13, 2); //Ret�ngulo da bilheteria
 	Retangulo(2, 20, 86, 2); //Ret�ngulo interno de menu
 	Retangulo(2, 23, 86, 6); //Ret�ngulo de intera��o com o usu�rio
-
 	char Cinema[14][23];
 	char file_name[4];
-
+	char PCinema[14][23];
+    char vali_ingressos[5];
+    char num;
+    char num2;
+	int num_ingressos = 0;
     int largura = 1; //Vari�vel que aponta a coordenada de largura do cursor
 	int tecla; //Vari�vel para armazenar as teclas pressionadas
 	int i = 0; //Contador gen�rico
+	int linha_convertida;
+    int k = 0; //Contador alternativo
+    char vali_coluna[4];
 
     int linha, coluna;
 	//Amostra de sala vazia
@@ -552,6 +562,7 @@ void assentos(int filme, int horario, char nome[30], int idade)
 		for (coluna = 0; coluna < 23; coluna++)
         {
 			Cinema[linha][coluna]=0; //Tranforma todas as cadeiras em vazias
+			PCinema[linha][coluna] = 0;
         }
     }
 
@@ -560,6 +571,7 @@ void assentos(int filme, int horario, char nome[30], int idade)
     int pause;
 
     sprintf(file_name, "%i-%i", filme, horario); //Cria uma string a partir do n�mero da sala e do hor�rio
+    criar(file_name);
 	ler(linhasP, colunasP, &pause, file_name); //Chama a fun��o apontando para 3 ponteiros
 
 	if (pause != 0) //Se o ponteiro retorna 0 que significa que o arquivo est� vazio, logo ele n�o tenta gravar nenhuma matriz
@@ -601,10 +613,10 @@ void assentos(int filme, int horario, char nome[30], int idade)
 
 		Gotoxy(36, 21);
 		if (largura == 21)
-			printf(RED"Escolher Assentos"RST);
+			printf(RED"Escolher assentos"RST);
 
 		if (largura != 21)
-			printf(RST"Escolher Assentos"RST);
+			printf(RST"Escolher assentos"RST);
 
 		Gotoxy(80, 21);
 		if (largura == 41)
@@ -651,18 +663,15 @@ void assentos(int filme, int horario, char nome[30], int idade)
 	}
 
 	Gotoxy(36, 21);
-	printf(RST"Escolher Assentos"RST);
+	printf(RST"Escolher assentos"RST);
 
-    int num_ingressos = 0,comprimento;
-    char vali_ingressos[4];
-    char num;
     i=0;
 
 	Gotoxy(4, 24);
-	printf(YEL"Quantos Ingressos Voce deseja ?"RST);
+	printf(YEL"Quantos ingressos voce deseja?"RST);
+	Gotoxy(4, 25);
 	do
     {
-    	Gotoxy(4, 25);
         vali_ingressos[i] = '\0';
         num = getch();
         if(isdigit(num))
@@ -671,46 +680,43 @@ void assentos(int filme, int horario, char nome[30], int idade)
             i++;
             printf("%c", num);
         }
-        if(num == 8 && i)// 8 = backspace e i -> se houver caracteres ja digitados
+        if(num == 8 && i || atoi(vali_ingressos) > 25)// 8 = backspace e i -> se houver caracteres ja digitados
         {
           vali_ingressos[i] = '\0';
           i--;
           printf("\b \b");
         }
 
-        comprimento = strlen(vali_ingressos);
-        num_ingressos = atoi(vali_ingressos);
-
-        if(num_ingressos < 322)
-        {
-	        Gotoxy(4, 26);
-	        printf(RED"Numero Maximo Atingido"RED);
-		}
-    }while(num != 13  || comprimento < 1 || num_ingressos > 322);
-	Gotoxy(4, 25);
-	printf("%d", num_ingressos);
+    }while(num != 13  || strlen(vali_ingressos) < 1 );
 
 	Beep(349, 100);
 
-    int linha_convertida;
-    int k = 0; //Contador alternativo
-	for (i = 0, k = 0; i < num_ingressos; i++)
+	for (i = 0, k = 0; i < atoi(vali_ingressos); i++)
 	{
 		Gotoxy(4, 26);
-		printf(YEL"Escolha as Cadeiras "RST);
+		printf(YEL"Escolha as cadeiras:"RST);
+        do
+        {
+        linha = valiletra(k);
+        coluna = valinum(k);
+        if(Cinema[linha][coluna] == 1)
+        {
+            Gotoxy(4 + k, 27);
+            printf("         ");
+            Gotoxy(4,28);
+            printf(RED"Assento ocupado"RST);
+        }
+        }while(Cinema[linha][coluna] == 1);
+        Gotoxy(4,28);
+        printf("                ");
+		Cinema[linha][coluna] = 1;
+		PCinema[linha][coluna] = 1;
 
-		Gotoxy(4 + k, 27);
-		scanf(" %c%d", &linha, &coluna);
-
-		linha = toupper(linha);
-		linha_convertida = linha - 65;
-
-		Cinema[linha_convertida][coluna] = 1;
-
-		if (linha_convertida < 23 && linha_convertida >= 0 && coluna < 14 && coluna >= 0)
-			gravar(linha_convertida, coluna, file_name);
-
-		k += 4;
+		if (coluna < 23 && coluna >= 0 && linha < 14 && linha >= 0)
+		{
+			gravar(linha, coluna, file_name);
+		}
+		k += 5;
 	}
 
 	for (linha = 0; linha < 14; linha++)
@@ -780,7 +786,7 @@ void assentos(int filme, int horario, char nome[30], int idade)
     if (largura == 1)
 	{
 		system("cls");
-		bilhete(nome, idade);
+		bilhete(nome, idade, PCinema, horario,filme);
 	}
 
 	if (largura == 21)
@@ -834,7 +840,12 @@ int gravar(int linha, int coluna, const char* file_name)
 	fprintf(cine, "%d %d\n", linha, coluna); //Grava no arquivo a linha e a coluna recebida pela fun��o
 	fclose(cine);
 }
-
+int criar(const char* file_name)
+{
+	FILE *cine;
+	cine = fopen(file_name, "a+");//Aponta o ponteiro para o arquivo aberto em modo escrita, por�m se precisar criar o arquivo ele cria
+	fclose(cine);
+}
 int vazio(const char* file_name)
 {
     FILE *cine;
@@ -879,6 +890,7 @@ void encerrando()
 	system("cls");
 	exit(1); //Encerra o progama
 }
+
 void desenhoUm()
 {
 Gotoxy(22,11);printf(RED"\xDB\xDC\xDB\xDC\xDB"BLU);
@@ -887,23 +899,25 @@ Gotoxy(23,12);printf(RED"\xDB\xDB\xDB"GRN);
 Gotoxy(24,13);printf(GRN"\xDB"GRN);
 Gotoxy(24,14);printf(GRN"\xDB"RED);
 }
+
 void desenhoDois()
 {
 Gotoxy(42,11);printf(GRY"\xDB\xDC\xDB\xDC\xDB"GRY);
 Gotoxy(42,12);printf(GRY"      "GRY);
 Gotoxy(42,12);printf(GRY" \xDB\xDB\xDB "GRY);
 Gotoxy(42,13);printf(GRY" \xDB\xDB\xDB "GRY);
-Gotoxy(42,14);printf(GRY"\xDB\xDB\xDB\xDB\xDB"GRY);
+Gotoxy(42,14);printf(GRY"\xDB\xDB\xDB\xDB\xDB"YEL);
 }
 
 void desenhoTres()
 {
-Gotoxy(62,11);printf(GRN" \xDB\xDB\xDB "GRY);
-Gotoxy(62,12);printf(GRN"\xDB\xDB\xDB\xDB\xDB"BRO);
-Gotoxy(62,12);printf(BLU"\xDF\xDF\xDB\xDF\xDF"GRY);
-Gotoxy(62,13);printf(BLU"  \xDB"YEL);
-Gotoxy(62,14);printf(BLU"  \xDB"RST);
+Gotoxy(62,11);printf(BLU" \xDB\xDB\xDB "YEL);
+Gotoxy(62,12);printf(BLU"\xDB\xDB\xDB\xDB\xDB"RST);
+Gotoxy(62,12);printf(" \xDF\xDB\xDF ");
+Gotoxy(62,13);printf("  \xDB");
+Gotoxy(62,14);printf("  \xDB"RST);
 }
+
 void desenhoCatalogoUm()
 {
 Gotoxy(10,5);printf(RED"\xDB\xDC\xDB\xDC\xDB"BLU);
@@ -913,6 +927,7 @@ Gotoxy(11,7);printf(RED"\xDB\xDB\xDB"GRN);
 Gotoxy(12,8);printf(GRN"\xDB"GRN);
 Gotoxy(12,9);printf(GRN"\xDB"RED);
 }
+
 void desenhoCatalogoDois()
 {
 Gotoxy(10,5);printf(GRY"\xDB\xDC\xDB\xDC\xDB"GRY);
@@ -922,20 +937,26 @@ Gotoxy(10,7);printf(GRY" \xDB\xDB\xDB "GRY);
 Gotoxy(10,8);printf(GRY"\xDB\xDB\xDB\xDB\xDB"GRY);
 Gotoxy(10,9);printf(GRY"\xDF\xDF\xDF\xDF\xDF"GRY);
 }
+
 void desenhoCatalogoTres()
 {
-Gotoxy(10,5);printf(GRN" \xDB\xDB\xDB "GRY);
-Gotoxy(10,6);printf(GRN"\xDB\xDB\xDB\xDB\xDB"BRO);
-Gotoxy(10,6);printf(BLU"\xDF\xDF\xDB\xDF\xDF"GRY);
-Gotoxy(10,7);printf(BLU"  \xDB"YEL);
-Gotoxy(10,8);printf(BLU"  \xDB"YEL);
-Gotoxy(10,9);printf(BLU"  \xDB"RST);
+Gotoxy(11,5);printf(BLU"\xDB\xDB\xDB "GRY);
+Gotoxy(11,6);printf(BLU"\xDB\xDB\xDB\xDB"RST);
+Gotoxy(11,6);printf("\xDF\xDB\xDF ");
+Gotoxy(12,7);printf("\xDB");
+Gotoxy(12,8);printf("\xDB");
+Gotoxy(12,9);printf("\xDB");
 }
-void bilhete(char nome[30], int idade)
+
+void bilhete(char nome[30], int idade, char assentos[14][23],int horario, int filme)
 {
+	int linha;
+	int coluna;
+	int jumpline=0;
+
 	system("color 00");
 	Retangulo(19,8,51,12);//PRINCI
-
+	int i;
 	Gotoxy(21,9);
 	printf("%c",4);
 	Gotoxy(68,9);
@@ -945,31 +966,126 @@ void bilhete(char nome[30], int idade)
 	Gotoxy(68,19);
 	printf("%c",4);
 
-	for(int i = 9; i < 20; i++)
+	for(i = 9; i < 20; i++)
     {
         Gotoxy(66, i);
         printf("|");
     }
 
-	Gotoxy(41, 9);
-	printf(GRN"BATMAN");
+	 if(filme == 1)
+    {
+    	Gotoxy(41,9);
+    	printf(YEL"La Rosa"RST, filme);
+	}
 
-	Gotoxy(41, 10);
-	printf("18:00"YEL);
+	if(filme == 2)
+    {
+    	Gotoxy(42,9);
+    	printf(YEL"Roque"RST, filme);
+	}
+	if(filme == 3)
+    {
+    	Gotoxy(39,9);
+    	printf(YEL"Brinquinhos"RST, filme);
+	}
+
+	Gotoxy(42, 10);
+	if(horario == 1)
+	{
+		printf(YEL"18:00"RST);
+	}
+	else if(horario == 2)
+	{
+		printf(YEL"20:00"RST);
+	}
+	else if(horario == 3)
+	{
+		printf(YEL"22:00"RST);
+	}
 
 	Gotoxy(21, 12);
-	printf("%s", nome);
+	printf(YEL"%s"RST, nome);
 
 	Gotoxy(21, 13);
-	printf("%d anos", idade);
+	printf(YEL"%d anos"RST, idade);
 
 	Gotoxy(21, 15);
-	printf("Assento(s) comprado(s):");
+	printf(YEL"Assento(s) comprado(s):"RST);
 
 	Gotoxy(21, 16);
-	printf("h1 h2 h3 h4 h5");
-
+	for(linha=0;linha<14;linha++)
+	{
+		for(coluna=0;coluna<23;coluna++)
+		{
+			if(assentos[linha][coluna] == 1)
+			{
+				printf(YEL"%c%i "RST,linha+65,coluna);
+				jumpline++;
+			}
+			if(jumpline == 13)
+			{
+                Gotoxy(21, 17);
+			}
+		}
+	}
 	Gotoxy(40, 19);
-	printf("BOM FILME!");
+	printf(YEL"BOM FILME!"RST);
 	getch();
+	system("cls");
+	main();
+}
+
+int valinum(int compri)
+{
+	char vali_coluna[4],num;
+	int i=0;
+    Gotoxy(5 + compri, 27);
+	do
+    {
+        vali_coluna[i] = '\0';
+        num = getch();
+        if(isdigit(num))
+        {
+            vali_coluna[i] = num;
+            i++;
+            printf("%c", num);
+        }
+        vali_coluna[i] = '\0';
+        if(num == 8 && i || atoi(vali_coluna) > 22)// 8 = backspace e i -> se houver caracteres ja digitados
+        {
+          vali_coluna[i] = '\0';
+          i--;
+          printf("\b \b");
+        }
+    }while(num != 13  || strlen(vali_coluna) < 1);
+return atoi(vali_coluna);
+}
+
+int valiletra(int compri)
+{
+	char letra,vali_letra[3];
+	int i=0;
+    Gotoxy(4 + compri, 27);
+	do
+    {
+        vali_letra[i] = '\0';
+        letra = getch();
+        letra = toupper(letra);
+        if(isalpha(letra))
+        {
+            vali_letra[i] = letra;
+            i++;
+            printf("%c", letra);
+        }
+        vali_letra[i] = '\0';
+        if(letra == 8 && i || strlen(vali_letra) > 1 || letra - 65 > 13)// 8 = backspace e i -> se houver caracteres ja digitados
+        {
+          vali_letra[i] = '\0';
+          i--;
+          printf("\b \b");
+        }
+	}while(letra != 13 || strlen(vali_letra) < 1 || vali_letra[i - 1] == 32);
+	letra = vali_letra[0];
+	letra = letra - 65;
+	return letra;
 }
