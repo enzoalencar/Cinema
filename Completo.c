@@ -666,8 +666,17 @@ void assentos(int filme, int horario, char nome[30], int idade)
 		encerrando();
 	}
 
-	moverxy(36, 21);
-	printf(RST"Escolher assentos"RST);
+	moverxy(3, 21);
+	printf("                                                                                  "RST);
+	moverxy(39,21);
+	printf("Escolhendo");
+	Sleep(150);
+	printf(".");
+	Sleep(150);
+	printf(".");
+	Sleep(150);
+	printf(".");
+	
 
     i=0;
 
@@ -688,7 +697,6 @@ void assentos(int filme, int horario, char nome[30], int idade)
         {
           vali_ingressos[i] = '\0';
           i--;
-          printf("\b \b");
         }
 
     }while(num != 13  || strlen(vali_ingressos) < 1 );
@@ -729,78 +737,26 @@ void assentos(int filme, int horario, char nome[30], int idade)
 		for (coluna = 0; coluna < 23; coluna++)
 		{
 			if (Cinema[linha][coluna] == 1) //Se tiver ocupada imprime veremlho
+			{
 				printf(RED"%c%d "RST, linha + 65, coluna);
+			}
+				
 
 			else if (Cinema[linha][coluna] == 0) //Livre imprime verde
 				printf(GRNN"%c%d "GRN, linha + 65, coluna);
 		}
-		printf("\n");
 	}
-
-	largura = 1;
-
+	
 	do
 	{
-        moverxy(78, 28);
-		if(largura == 1)
-			printf(RED"Confirmar"RST);
-
-		else if(largura != 1)
-			printf(RST"Confirmar"RST);
-
-        moverxy(5, 21);
-		if(largura == 21)
-			printf(RED"Voltar"RST);
-
-		else if(largura != 21)
-			printf(RST"Voltar"RST);
-
-		moverxy(80, 21);
-		if(largura == 41)
-			printf(RED"Sair "RST);
-
-		else if(largura != 41)
-			printf(RST"Sair "RST);
-
-		fflush(stdin);
+		moverxy(78, 28);
+		printf(RED"Confirmar"RST);
 		tecla = getch();
-
-		switch(tecla)
-		{
-			case 75:
-				if (largura > 1)
-					largura -= 20;
-
-				else
-					largura = 41;
-				break;
-
-			case 77:
-				if (largura < 41)
-					largura += 20;
-
-				else
-					largura = 1;
-				break;
-		}
 	}while (tecla != 13);
-
+	
 	Beep(349, 100);
-
-    if (largura == 1)
-	{
-		system("cls");
-		bilhete(nome, idade, PCinema, horario,filme);
-	}
-
-	if (largura == 21)
-	{
-		system("cls");
-		filmesmenu(filme);
-	}
-
-    if (largura == 41)
-		encerrando();
+	system("cls");
+	bilhete(nome, idade, PCinema, horario,filme);
 }
 
 int ler(int *rL, int *rC, int *rB, const char* file_name)
@@ -1037,6 +993,7 @@ void bilhete(char nome[30], int idade, char assentos[14][23],int horario, int fi
 	moverxy(40, 19);
 	printf(YEL"BOM FILME!"RST);
 	getch();
+	Beep(349,100);
 	system("cls");
 	inicio();
 }
