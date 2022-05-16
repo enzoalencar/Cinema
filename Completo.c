@@ -676,7 +676,6 @@ void assentos(int filme, int horario, char nome[30], int idade)
 	printf(".");
 	Sleep(150);
 	printf(".");
-	
 
     i=0;
 
@@ -697,6 +696,7 @@ void assentos(int filme, int horario, char nome[30], int idade)
         {
           vali_ingressos[i] = '\0';
           i--;
+          printf("\b \b");
         }
 
     }while(num != 13  || strlen(vali_ingressos) < 1 );
@@ -740,20 +740,20 @@ void assentos(int filme, int horario, char nome[30], int idade)
 			{
 				printf(RED"%c%d "RST, linha + 65, coluna);
 			}
-				
+
 
 			else if (Cinema[linha][coluna] == 0) //Livre imprime verde
 				printf(GRNN"%c%d "GRN, linha + 65, coluna);
 		}
 	}
-	
+
 	do
 	{
 		moverxy(78, 28);
 		printf(RED"Confirmar"RST);
 		tecla = getch();
 	}while (tecla != 13);
-	
+
 	Beep(349, 100);
 	system("cls");
 	bilhete(nome, idade, PCinema, horario,filme);
