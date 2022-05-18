@@ -22,6 +22,8 @@
 //Funçoess auxiliares
 void moverxy(int coord_x, int coord_y); //Fun??o que possibilita a personaliza??o localizada no terminal, atrav?s de coordenadas
 void retangulo( int ho, int vo, int larg, int alt ); //Gera um ret?ngulo na tela
+void com_cursor();
+void sem_cursor();
 //Funçoes de desenho no menu
 void desenhoUm();
 void desenhoDois();
@@ -53,6 +55,7 @@ int vazio(const char* file_name); //Fun?ao que Verifica se o arquivo esta vazio
 int main()
 {
 	system("MODE con cols=92 lines=31");
+	sem_cursor();
 	load();
 	inicio();
 	return 0;
@@ -78,7 +81,7 @@ void retangulo(int horizontal_inicial, int vertical_inicial, int larg, int alt)
      for (horizontal = horizontal_inicial; horizontal < horizontal_inicial + larg; horizontal++)
 	 {
         moverxy(horizontal, vertical_inicial);
-        printf(RED"%c", 205); //Imprime o caracter especial com retorno 206
+        printf(RED"%c", 205); //Imprime o caracter especial com retorno 205
 
         moverxy(horizontal, vertical_inicial + alt);
         printf(RED"%c", 205);
@@ -110,19 +113,19 @@ void retangulo(int horizontal_inicial, int vertical_inicial, int larg, int alt)
 
 void load()
 {
-	system("color 00"); //Redefine a sistema para a cor padr?o
+	system("color 00"); //Redefine a sistema para a cor padrao
 
 	moverxy(39, 11);
 	printf("Iniciando...");
 
-	retangulo(0, 0, 90, 30); //Ret?ngulo externo
-	retangulo(16, 12, 59, 4); //Ret?ngulo interno
+	retangulo(0, 0, 90, 30); //Retangulo externo
+	retangulo(16, 12, 59, 4); //Retangulo interno
 
 	int i=0;
 	while (i<=50)
 	{
 		moverxy(i + 18,14);
-		printf(REDB" "REDN); //Imprime um espa?o vermelho
+		printf(REDB" "REDN); //Imprime um espaco vermelho
 
 		moverxy(70,14);
 		printf(RST"%d%%"REDN,i*2); //Imprime a porcetagem do carregamento
@@ -140,11 +143,11 @@ void inicio()
 {
 	system("color 00");
 
-	int altura = 3; //Vari?vel que aponta a coordenada de altura do cursor(altura ? inversa ao sentido convencional)
-	char tecla; //Vari?vel para armazenar as teclas pressionadas
+	int altura = 1; //Variavel que aponta a coordenada de altura do cursor(altura e inversa ao sentido convencional)
+	char tecla; //Variavel para armazenar as teclas pressionadas
 
-	retangulo(0, 0, 90, 30); //Ret?ngulo externo
-	retangulo(36, 8, 17, 10); //Ret?ngulo interno
+	retangulo(0, 0, 90, 30); //Retangulo externo
+	retangulo(36, 8, 17, 10); //Retangulo interno
 
     moverxy(42, 10);
     printf(YEL"CINEMA"RST);
@@ -154,38 +157,39 @@ void inicio()
 	do
 	{
     	moverxy(41, 12);
-    	if (altura == 3)
-    		printf(RED"Catalogo\n\n\n"RST);
+    	if (altura == 1)
+    		printf(RED"Catalogo"RST);
 
-    	else if (altura != 3)
- 			printf(RST"Catalogo\n\n\n"RST);
+    	else if (altura != 1)
+ 			printf(RST"Catalogo"RST);
 
  		moverxy(43, 14);
- 		if (altura == 5)
+ 		if (altura == 2)
  			printf(RED"Sair"RST);
 
- 		else if (altura != 5)
- 			printf(RST"Sair\n\n\n"RST);
+ 		else if (altura != 2)
+ 			printf(RST"Sair"RST);
+
 
 		fflush(stdin); //Limpa o buffer
-		tecla = getch(); //L? um caracter
+		tecla = getch(); //Le um caracter
 
 		switch(tecla)
 		{
-			case 72: //Move ao pressionar seta para cima
-				if(altura > 3)
-					altura -= 2 ;
+			case 72: //Caso pressione a seta para cima
+				if(altura > 1)
+					altura -= 1 ;
 
 				else
-					altura = 5; //Se o limite for excedido ele volta ao ?ltimo valor de altura
+					altura = 2; //Se o limite for excedido ele volta ao ultimo valor de altura
 				break;
 
-			case 80:
-				if(altura < 5) //Move ao pressionar seta para baixo
-					altura += 2;
+			case 80: //Caso pressione a seta para baixo
+				if(altura < 2)
+					altura += 1;
 
 				else
-					altura = 3 ; //Se o limite for excedido ele volta ao primeiro valor de altura
+					altura = 1 ; //Se o limite for excedido ele volta ao primeiro valor de altura
 				break;
 		}
 	}while (tecla != 13); //Finaliza ao pressionar Enter
@@ -195,20 +199,20 @@ void inicio()
 
 	switch(altura)
 	{
-		case 5: //Caso selecione "Sair"
-			encerrando();
+	    case 1: //Caso selecione "Catalogo"
+			catalogo();
 			break;
 
-		case 3: //Caso selecione "Catalogo"
-			catalogo();
+		case 2: //Caso selecione "Sair"
+			encerrando();
 			break;
 	}
 }
 
 void catalogo()
 {
-	int largura = 21; //Vari?vel que aponta a coordenada de largura do cursor
-	char tecla; //Vari?vel para armazenar as teclas pressionadas
+	int largura = 2; //Variavel que aponta a coordenada de largura do cursor
+	char tecla; //Variavel para armazenar as teclas pressionadas
 
     moverxy(42, 6);
 	printf(YEL"FILMES"RST);
@@ -237,31 +241,31 @@ void catalogo()
 			printf(RST"Voltar"RST); //Imprime Voltar branco
 
 		moverxy(21, 16);
-		if (largura == 21)
+		if (largura == 2)
 			printf(RED"La Rosa "RST); //Imprime Filme 1 vermelho
 
-		else if (largura != 21)
+		else if (largura != 2)
 			printf(RST"La Rosa "RST); //Imprime Filme 1 branco
 
 		moverxy(42, 16);
-		if (largura == 41)
+		if (largura == 3)
 			printf(RED"Roque "RST); //Imprime Filme 2 vermelho
 
-		else if (largura != 41)
+		else if (largura != 3)
 			printf(RST"Roque "RST); //Imprime Filme 2 branco
 
 		moverxy(59, 16);
-		if (largura == 61)
+		if (largura == 4)
 			printf(RED"Brinquinhos "RST); //Imprime Filme 3 vermelho
 
-		else if (largura != 61)
+		else if (largura != 4)
 			printf(RST"Brinquinhos "RST); //Imprime Filme 3 branco
 
 		moverxy(80, 25);
-		if (largura == 81)
+		if (largura == 5)
 			printf(RED"Sair "RST); //Imprime Sair vermelho
 
-		else if (largura != 81)
+		else if (largura != 5)
 			printf(RST"Sair "RST); //Imprime Sair branco
 
 		fflush(stdin);
@@ -271,15 +275,15 @@ void catalogo()
 		{
 			case 75: //Move ao pressionar seta para esquerda
 				if(largura > 1)
-					largura -= 20;
+					largura -= 1;
 
 				else
-					largura = 81; //Se o limite for excedido ele volta ao ?ltimo valor de largura
+					largura = 5; //Se o limite for excedido ele volta ao ?ltimo valor de largura
 				break;
 
 			case 77: //Move ao pressionar seta para direita
-				if(largura < 81)
-					largura += 20;
+				if(largura < 5)
+					largura += 1;
 
 				else
 					largura = 1; //Se o limite for excedido ele volta ao primeiro valor de largura
@@ -296,19 +300,19 @@ void catalogo()
 			inicio();
 			break;
 
-		case 21: //Caso selecione Filme 1
+		case 2: //Caso selecione Filme 1
 			filmesmenu(1);
 			break;
 
-		case 41: //Caso selecione Filme 2
+		case 3: //Caso selecione Filme 2
 			filmesmenu(2);
 			break;
 
-		case 61: //Caso selecione Filme 3
+		case 4: //Caso selecione Filme 3
 			filmesmenu(3);
 			break;
 
-		case 81: //Caso selecione Sair
+		case 5: //Caso selecione Sair
 			encerrando();
 			break;
 	}
@@ -316,14 +320,14 @@ void catalogo()
 
 void filmesmenu(int filme)
 {
-    int largura = 21; //Vari?vel que aponta a coordenada de largura do cursor
+    int largura = 2; //Variavel que aponta a coordenada de largura do cursor
     char tecla;
 
 
     retangulo(0, 0, 90, 30); //retangulo externo
     retangulo(5, 3, 14, 8); //retangulo interno da foto
-    retangulo(29, 3, 51, 12); //retangulo interno da descri??o
-    retangulo(18, 23, 50, 4); //retangulo externo dos hor?rios
+    retangulo(29, 3, 51, 12); //retangulo interno da descricao
+    retangulo(18, 23, 50, 4); //retangulo externo dos horarios
 
     if(filme == 1)
     {
@@ -373,40 +377,40 @@ void filmesmenu(int filme)
 
     do
     {
-        moverxy(21, 25);
-        if (largura == 21)
-            printf(RED"18:00 "RST);
-
-        else if (largura != 21)
-            printf(RST"18:00 "RST);
-
-        moverxy(41, 25);
-        if (largura == 41)
-            printf(RED"20:00 "RST);
-
-        else if (largura != 41)
-            printf(RST"20:00 "RST);
-
-        moverxy(61, 25);
-        if (largura == 61)
-            printf(RED"22:00 "RST);
-
-        else if (largura != 61)
-            printf(RST"22:00 "RST);
-
-        moverxy(80, 25);
-        if (largura == 81)
-            printf(RED"Sair "RST);
-
-        else if (largura != 81)
-            printf(RST"Sair "RST);
-
         moverxy(5,25);
         if (largura == 1)
             printf(RED"Voltar"RST);
 
         else if (largura != 1)
             printf(RST"Voltar"RST);
+
+        moverxy(21, 25);
+        if (largura == 2)
+            printf(RED"18:00 "RST);
+
+        else if (largura != 2)
+            printf(RST"18:00 "RST);
+
+        moverxy(41, 25);
+        if (largura == 3)
+            printf(RED"20:00 "RST);
+
+        else if (largura != 3)
+            printf(RST"20:00 "RST);
+
+        moverxy(61, 25);
+        if (largura == 4)
+            printf(RED"22:00 "RST);
+
+        else if (largura != 4)
+            printf(RST"22:00 "RST);
+
+        moverxy(80, 25);
+        if (largura == 5)
+            printf(RED"Sair "RST);
+
+        else if (largura != 5)
+            printf(RST"Sair "RST);
 
         fflush(stdin);
         tecla = getch();
@@ -415,15 +419,15 @@ void filmesmenu(int filme)
         {
             case 75:
                 if (largura > 1)
-                    largura -= 20;
+                    largura -= 1;
 
                 else
-                    largura = 81;
+                    largura = 5;
                 break;
 
             case 77:
-                if (largura < 81)
-                    largura += 20;
+                if (largura < 5)
+                    largura += 1;
 
                 else
                     largura = 1;
@@ -437,16 +441,16 @@ void filmesmenu(int filme)
     if (largura == 1)
         catalogo();
 
-    else if (largura == 21)
+    else if (largura == 2)
         login(filme, 1);
 
-    else if (largura == 41)
+    else if (largura == 3)
         login(filme, 2);
 
-    else if (largura == 61)
+    else if (largura == 4)
         login(filme, 3);
 
-    else if (largura == 81)
+    else if (largura == 5)
         encerrando();
 }
 
@@ -456,7 +460,8 @@ void login(int filme, int horario)
     char nome[30], idade[4];
     char letra, num;
 
-	system("color 00");//Setar Padrão Cor do Terminal
+	system("color 00");//Setar Padrao Cor do Terminal
+	com_cursor();
     retangulo(0,0,90,30);//retangulo Principal
     retangulo(28,8,34,10);//retangulo Mini Menu
 
@@ -545,21 +550,22 @@ void assentos(int filme, int horario, char nome[30], int idade)
 	retangulo(38, 17, 13, 2); //Retangulo da bilheteria
 	retangulo(2, 20, 86, 2); //Retangulo interno de menu
 	retangulo(2, 23, 86, 6); //Retangulo de interacao com o usuario
-	char Cinema[14][23];
+	char Cinema[14][23]; //Matriz que armazena as cadeiras ocupadas
 	char file_name[4];
-	char PCinema[14][23];
+	char PCinema[14][23]; // Matriz copia
     char vali_ingressos[5];
     char num;
-    char num2;
-	int num_ingressos = 0;
     int largura = 1; //Variavel que aponta a coordenada de largura do cursor
-	int tecla; //Vari?vel para armazenar as teclas pressionadas
+	int tecla; //Variavel para armazenar as teclas pressionadas
 	int i = 0; //Contador generico
-	int linha_convertida;
     int k = 0; //Contador alternativo
-    char vali_coluna[4];
-
+    int colunasP[322];
+	int linhasP[322];
+    int pause;
     int linha, coluna;
+
+    sem_cursor();
+
 	//Amostra de sala vazia
 	for (linha = 0; linha < 14; linha++)
     {
@@ -570,17 +576,13 @@ void assentos(int filme, int horario, char nome[30], int idade)
         }
     }
 
-    int colunasP[322];
-	int linhasP[322];
-    int pause;
-
-    sprintf(file_name, "%i-%i", filme, horario); //Cria uma string a partir do n?mero da sala e do hor?rio
+    sprintf(file_name, "%i-%i", filme, horario); //Cria uma string a partir do numero da sala e do horario
     criar(file_name);
-	ler(linhasP, colunasP, &pause, file_name); //Chama a fun??o apontando para 3 ponteiros
+	ler(linhasP, colunasP, &pause, file_name); //Chama a funcao apontando para 3 ponteiros
 
-	if (pause != 0) //Se o ponteiro retorna 0 que significa que o arquivo est? vazio, logo ele n?o tenta gravar nenhuma matriz
+	if (pause != 0) //Se o ponteiro retorna 0 que significa que o arquivo esta vazio, logo ele nao tenta gravar nenhuma matriz
 	{
-		while (i < pause) //Grava at? o valor contado dentro da fun?ao que define a quantidade de cadeira armazenadas
+		while (i < pause) //Grava ate o valor contado dentro da funcao que define a quantidade de cadeira armazenadas
 		{
 			int a = linhasP[i];
 			int b = colunasP[i];
@@ -600,7 +602,6 @@ void assentos(int filme, int horario, char nome[30], int idade)
 			else if (Cinema[linha][coluna] == 0) //Se estiver livre imprime verde
 				printf(GRNN"%c%d "RST, linha + 65, coluna);
 		}
-		printf("\n");
 	}
 
     moverxy(40, 18);
@@ -616,17 +617,17 @@ void assentos(int filme, int horario, char nome[30], int idade)
 			printf(RST"Voltar"RST);
 
 		moverxy(36, 21);
-		if (largura == 21)
+		if (largura == 2)
 			printf(RED"Escolher assentos"RST);
 
-		if (largura != 21)
+		if (largura != 2)
 			printf(RST"Escolher assentos"RST);
 
 		moverxy(80, 21);
-		if (largura == 41)
+		if (largura == 3)
 			printf(RED"Sair "RST);
 
-		if (largura != 41)
+		if (largura != 3)
 			printf(RST"Sair "RST);
 
 		fflush(stdin);
@@ -636,15 +637,15 @@ void assentos(int filme, int horario, char nome[30], int idade)
 		{
             case 75:
                 if (largura > 1)
-                    largura -= 20;
+                    largura -= 1;
 
                 else
-                    largura = 41;
+                    largura = 3;
                 break;
 
             case 77:
-                if (largura < 41)
-                    largura += 20;
+                if (largura < 3)
+                    largura += 1;
 
                 else
                     largura = 1;
@@ -660,7 +661,7 @@ void assentos(int filme, int horario, char nome[30], int idade)
 		filmesmenu(filme);
 	}
 
-	else if (largura == 41)
+	else if (largura == 3)
 	{
 		system("cls");
 		encerrando();
@@ -678,6 +679,7 @@ void assentos(int filme, int horario, char nome[30], int idade)
 	printf(".");
 
     i=0;
+    com_cursor();
 
 	moverxy(4, 24);
 	printf(YEL"Quantos ingressos voce deseja?"RST);
@@ -747,6 +749,8 @@ void assentos(int filme, int horario, char nome[30], int idade)
 		}
 	}
 
+    sem_cursor();
+
 	do
 	{
 		moverxy(78, 28);
@@ -762,9 +766,9 @@ void assentos(int filme, int horario, char nome[30], int idade)
 int ler(int *rL, int *rC, int *rB, const char* file_name)
 {
 	FILE *cine; //Ponteiro para o arquivo
-	int linhas, colunas; //Vari?veis para leitura
+	int linhas, colunas; //Variaveis para leitura
 
-	int i = 0, cont = 0; //Vari?veis para Contagem
+	int i = 0, cont = 0; //Variaveis para Contagem
 	cine = fopen(file_name, "r"); //Aponta o ponteiro para o arquivo aberto em modo leitura
 
 	if (cine == NULL) //Se o arquivo nao for encontrado
@@ -1051,4 +1055,16 @@ int valiletra(int compri)
 	letra = vali_letra[0];
 	letra = letra - 65;
 	return letra;
+}
+
+void com_cursor() //funcao para aparecer o cursor da tela
+{
+    CONSOLE_CURSOR_INFO cursor = {1, TRUE};
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor);
+}
+
+void sem_cursor() //funcao para aparecer o cursor da tela
+{
+    CONSOLE_CURSOR_INFO cursor = {1, FALSE};
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor);
 }
