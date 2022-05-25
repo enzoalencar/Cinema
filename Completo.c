@@ -521,14 +521,14 @@ void login(int filme, int horario)
             i++;
             printf("%c", num);
         }
-        if(num == 8 && i || atoi(idade) > 120)// 8 = backspace e i -> se houver caracteres ja digitados
+        if(num == 8 && i || atoi(idade) > 120 || strlen(idade) > 29)// 8 = backspace e i -> se houver caracteres ja digitados
         {
           idade[i] = '\0';
           i--;
           printf("\b \b");
         }
 
-    }while(num != 13  || strlen(idade) < 1);
+    }while(num != 13  || strlen(idade) < 1 || atoi(idade) == 0);
 
 	if(filme == 1 && atoi(idade) < 18)
 	{
@@ -694,14 +694,14 @@ void assentos(int filme, int horario, char nome[30], int idade)
             i++;
             printf("%c", num);
         }
-        if(num == 8 && i || atoi(vali_ingressos) > 25)// 8 = backspace e i -> se houver caracteres ja digitados
+        if(num == 8 && i || atoi(vali_ingressos) > 25 || strlen(vali_ingressos) > 5)// 8 = backspace e i -> se houver caracteres ja digitados
         {
           vali_ingressos[i] = '\0';
           i--;
           printf("\b \b");
         }
 
-    }while(num != 13  || strlen(vali_ingressos) < 1 );
+    }while(num != 13  || strlen(vali_ingressos) < 1  || atoi(vali_ingressos) == 0);
 
 	Beep(349, 100);
 
